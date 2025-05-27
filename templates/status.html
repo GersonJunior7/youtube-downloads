@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status do Download</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-indigo-700 to-purple-800 min-h-screen flex items-center justify-center p-4 text-white">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-lg text-center">
+    <h1 class="text-3xl font-bold mb-6 flex items-center justify-center gap-2">
+      <i class="ri-download-cloud-line text-4xl text-yellow-400"></i> Status do Download
+    </h1>
+
+    <div id="status-area">
+      {% if status == 'done' %}
+        <p class="text-lg mb-6">✅ Download concluído!</p>
+        <a href="{{ url_for('status', filename=filename, format=format) }}" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full transition">
+          <i class="ri-download-line mr-2"></i> Baixar Arquivo
+        </a>
+      {% elif status.startswith('error') %}
+        <p class="text-red-400 text-lg">❌ {{ status }}</p>
+      {% elif status == 'pending' %}
+        <p class="text-lg mb-4">⏳ Seu download está em andamento...</p>
+        <div class="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+          <div class="h-full bg-yellow-400 animate-pulse w-1/2"></div>
+        </div>
+        <p class="mt-4 text-sm text-gray-300">Atualize esta página em alguns segundos para verificar.</p>
+      {% else %}
+        <p class="text-lg text-red-300">⚠️ Status desconhecido.</p>
+      {% endif %}
+    </div>
+
+    <div class="mt-8">
+      <a href="{{ url_for('index') }}" class="text-indigo-200 hover:underline text-sm">← Voltar para o início</a>
+    </div>
+  </div>
+</body>
+</html>
