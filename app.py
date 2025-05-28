@@ -19,13 +19,18 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+import os
+from yt_dlp import YoutubeDL
+
+DOWNLOAD_FOLDER = 'downloads'  # Ajuste se necessário
+download_status = {}
+
 def download_video(url, format_type, filename):
     output_path = os.path.join(DOWNLOAD_FOLDER, f'{filename}.%(ext)s')
 
-    # Define opções iniciais incluindo o cookiefile
     ydl_opts = {
         'outtmpl': output_path,
-        'cookiefile': 'cookies.txt',
+        'cookiefile': os.path.join(os.getcwd(), 'cookies.txt'),  # usa caminho absoluto
         'quiet': True,
     }
 
@@ -50,6 +55,7 @@ def download_video(url, format_type, filename):
         download_status[filename] = 'done'
     except Exception as e:
         download_status[filename] = f'error: {str(e)}'
+
 
 
 @app.route('/', methods=['GET', 'POST'])
