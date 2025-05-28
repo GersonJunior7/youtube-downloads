@@ -22,7 +22,12 @@ def get_db_connection():
 def download_video(url, format_type, filename):
     output_path = os.path.join(DOWNLOAD_FOLDER, f'{filename}.%(ext)s')
 
-    ydl_opts = {'outtmpl': output_path}
+    # Define opções iniciais incluindo o cookiefile
+    ydl_opts = {
+        'outtmpl': output_path,
+        'cookiefile': 'cookies.txt',
+        'quiet': True,
+    }
 
     if format_type == 'mp3':
         ydl_opts.update({
@@ -32,12 +37,10 @@ def download_video(url, format_type, filename):
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
-            'quiet': True,
         })
     else:
         ydl_opts.update({
             'format': 'bestvideo+bestaudio/best',
-            'quiet': True,
             'merge_output_format': 'mp4',
         })
 
@@ -47,6 +50,7 @@ def download_video(url, format_type, filename):
         download_status[filename] = 'done'
     except Exception as e:
         download_status[filename] = f'error: {str(e)}'
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
