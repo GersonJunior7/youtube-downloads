@@ -1,28 +1,24 @@
+import os
 from flask import Flask, render_template, request, send_file, redirect, url_for, flash, session
 from yt_dlp import YoutubeDL
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
-import os
 import uuid
 import threading
 
 app = Flask(__name__)
 app.secret_key = 'sua-chave-secreta'
 
-# Pasta de downloads
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
-# Status dos downloads
 download_status = {}
 
-# Conexão com o banco
 def get_db_connection():
     conn = sqlite3.connect('users.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-# Download do vídeo
 def download_video(url, format_type, filename):
     output_path = os.path.join(DOWNLOAD_FOLDER, f'{filename}.%(ext)s')
 
@@ -52,7 +48,6 @@ def download_video(url, format_type, filename):
     except Exception as e:
         download_status[filename] = f'error: {str(e)}'
 
-# Página inicial (requer login)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if 'user' not in session:
@@ -72,7 +67,6 @@ def index():
 
     return render_template('index.html')
 
-# Página de status
 @app.route('/status/<filename>')
 def status(filename):
     stat = download_status.get(filename, 'unknown')
@@ -88,7 +82,6 @@ def status(filename):
     else:
         return render_template("status.html", status=stat, filename=filename, format=format)
 
-# Registro de usuário
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -110,7 +103,6 @@ def register():
 
     return render_template('register.html')
 
-# Login de usuário
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -130,7 +122,6 @@ def login():
 
     return render_template('login.html')
 
-# Logout
 @app.route('/logout')
 def logout():
     session.pop('user', None)
@@ -138,4 +129,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
